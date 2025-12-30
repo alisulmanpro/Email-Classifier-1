@@ -2,8 +2,6 @@
 
 **A Machine Learning based solution to detect and filter malicious emails with high precision.**
 
----
-
 ## Project Overview
 
 In the modern digital era, spam emails are more than just a nuisance, they are a security risk. This project uses **Natural Language Processing (NLP)** and Machine Learning to classify emails as **Spam** or **Ham** (Legitimate).
@@ -15,15 +13,11 @@ In the modern digital era, spam emails are more than just a nuisance, they are a
 * **Vectorization:** Uses TF-IDF (Term Frequency-Inverse Document Frequency) for feature extraction.
 * **High Accuracy:** Optimized using the Naive Bayes / MultinomialNB algorithm.
 
----
-
 ## Tech Stack
 
 * **Language:** Python
 * **Libraries:** Scikit-learn, Pandas, NLTK
 * **Deployment:** Streamlit
-
----
 
 ## How It Works
 
@@ -31,8 +25,6 @@ In the modern digital era, spam emails are more than just a nuisance, they are a
 2. **Preprocessing:** Cleaning raw text by removing punctuation and converting to lowercase.
 3. **Feature Engineering:** Converting text into numerical vectors using TF-IDF.
 4. **Model Training:** Training a Multinomial Naive Bayes model for classification.
-
----
 
 ## Performance Metrics
 
@@ -50,8 +42,6 @@ In the modern digital era, spam emails are more than just a nuisance, they are a
 
 > **Result Explanation:**
  The spam detection model achieved an accuracy of 97.77%, which means it correctly classified most of the emails as spam or ham. The precision and recall values show that the model is very effective at identifying ham emails with high accuracy, while also performing strongly in detecting spam emails Overall, the results indicate that the model is reliable and  suitable for real-world email spam filtering applications.
- 
----
 
 ## Installation & Usage
 
