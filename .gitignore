@@ -1,2 +1,41 @@
-.idea
-.venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments (Standard & uv)
+.venv/
+venv/
+ENV/
+env/
+
+# uv specific
+.pdm-python
+.python-version
+
+# Environment variables (Sensitive info)
+.env
+.env.*
+!.env.example
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# FastAPI / Python logs
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# SQLite databases
+*.sqlite3
+*.db
+
+uv.lock
+
+data/*

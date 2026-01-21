@@ -1,55 +1,59 @@
 import joblib
-import streamlit as st
-import nltk
-import re
-import string
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+from src.preprocessing import preprocess_text
+from fastapi import FastAPI, HTTPException
+from typing import Literal
+from pydantic import BaseModel, Field
 
-nltk.download('stopwords', quiet=True)
-nltk.download('punkt', quiet=True)
-nltk.download('punkt_tab', quiet=True)
+# 1. Load model & vectorizer
+try:
+    model = joblib.load("models/spam_classifier.pkl")
+    tfidf = joblib.load("models/tfidf_vectorizer.pkl")
+except Exception as e:
+    raise RuntimeError(f"Model Loading Failed: {str(e)}")
 
-stop_words = stopwords.words('english')
-ps = PorterStemmer()
-
-def clean_emails(text: str) -> str:
-  text: str = text.lower() #Lowecase
-  text: str = re.sub(r'<.*?>', '', text) #remove html tags
-  text: str = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '', text) #remove emails
-  text: str = re.sub(r'https?://\S+|www\.\S+', '', text) #remove urls
-  text: str = re.sub(r'\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}', '', text) #remove phone numbers
-  text: list = nltk.word_tokenize(text) #tokenize the text
-  text: list = [word for word in text if word not in stop_words] #remove stopwords
-  text: list = [word for word in text if word not in string.punctuation] #remove punctuation
-  text: list = [ps.stem(word) for word in text] #stem words
-
-  text: str = ' '.join(text) #join the text
-  return text
-
-model = joblib.load('model.joblib')
-
-def spam_pred(email_text: str) -> int:
-    email_text = clean_emails(email_text)
-    prediction = model.predict([email_text])[0]
-    return prediction
-
-st.title('Email Spam Classifier.')
-input_text = st.text_area('Enter your Email')
-
-if st.button('Predict'):
-    pred = spam_pred(input_text)
-
-    if pred == 1:
-        st.header('Email is Spam! Careful.')
-    else:
-        st.header('Email is not Spam.')
-
-st.set_page_config(
-    page_title="Email Spam Detection App",
-    layout="centered",
-    initial_sidebar_state="collapsed",
-    menu_items={
-        "About": "Detect spam emails using a machine learning model trained with TF-IDF and Naive Bayes. Fast, accurate, and reliable."
-    }
+app = FastAPI(
+    title="Email Spam Detection API",
+    description="Classifies email text as spam or ham using pre-trained ML model.",
+    version="1.0.0"
 )
+
+class EmailRequest(BaseModel):
+    text: str = Field(
+        ...,
+        min_length=5,
+        description='Email body or message to classify',
+        example="You won $5000! Click here to claim your prize now."
+    )
+
+class SpamResponse(BaseModel):
+    label: Literal["spam", "ham"]
+    confidence: float = Field(..., ge=0, le=1)
+    message: str
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.post("/perdict", response_model=SpamResponse)
+async def classify_email(request: EmailRequest):
+    try:
+        cleaned = preprocess_text(request.text)
+        if len(cleaned.split()) < 2:
+            raise ValueError("Text too short after cleaning.")
+
+        # Transform with your TF-IDF
+        x = tfidf.transform([cleaned])
+
+        # Get probabilities (assumes class 1 = spam)
+        probs = model.predict_proba(x)[0]
+        spam_prob = probs[1] if len(probs) > 1 else float(probs[0])  # fallback if binary
+        label: Literal["ham", "spam"] = "spam" if spam_prob >= 0.5 else "ham"
+
+        return SpamResponse(
+            label=label,
+            confidence=round(float(spam_prob), 4),
+            message=f"Classified as **{label.upper()}** ({round(spam_prob * 100, 1)}% spam confidence)"
+        )
+
+    except Exception as exp:
+        raise HTTPException(status_code=422, detail=f"Error: {str(exp)}")
