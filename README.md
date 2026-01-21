@@ -1,83 +1,170 @@
-# Email Spam Classifier
+<img width="1920" height="563" alt="Image" src="https://github.com/user-attachments/assets/dde5d8a0-123c-4d3c-8f3a-84ac56ad59c7" />
 
-**A Machine Learning based solution to detect and filter malicious emails with high precision.**
+# Email/SMS Spam Detection System (Machine Learning)
 
-## Project Overview
+A production-ready machine learning system to classify **Email/SMS messages** as **Spam** or **Ham (Not Spam)** using classical NLP and supervised learning techniques.
 
-In the modern digital era, spam emails are more than just a nuisance, they are a security risk. This project uses **Natural Language Processing (NLP)** and Machine Learning to classify emails as **Spam** or **Ham** (Legitimate).
+This project is designed with **ML engineering best practices**, focusing on clean architecture, reproducibility, and business-driven evaluation.
 
-### Key Features
+---
 
-* **Real-time Prediction:** Classify text inputs instantly.
-* **NLP Pipeline:** Implementation of Tokenization, Stop-word removal, and Stemming.
-* **Vectorization:** Uses TF-IDF (Term Frequency-Inverse Document Frequency) for feature extraction.
-* **High Accuracy:** Optimized using the Naive Bayes / MultinomialNB algorithm.
+## Problem Statement
 
-## Tech Stack
+Spam messages cause financial loss, security risks, and poor user experience.  
+The goal of this project is to build a **reliable and interpretable spam detection system** that:
 
-* **Language:** Python
-* **Libraries:** Scikit-learn, Pandas, NLTK
-* **Deployment:** Streamlit
+- Minimizes **false positives** (important emails marked as spam)
+- Maximizes **spam recall**
+- Is fast, explainable, and deployable
 
-## How It Works
+---
 
-1. **Data Collection:** Trained on the SMS Spam Collection dataset.
-2. **Preprocessing:** Cleaning raw text by removing punctuation and converting to lowercase.
-3. **Feature Engineering:** Converting text into numerical vectors using TF-IDF.
-4. **Model Training:** Training a Multinomial Naive Bayes model for classification.
+## Dataset
 
-## Performance Metrics
+- **Source:** Kaggle – SMS Spam Collection Dataset
+- **Type:** Text (Unstructured)
+- **Classes:**
+  - `Ham` → Legitimate messages
+  - `Spam` → Unwanted or malicious messages
+- **Challenge:** Class imbalance (more ham than spam)
 
-`Model Accuracy: 97.77 %`
+> Raw dataset is stored without modification for reproducibility.
 
-`Classification Report:`
+---
 
-| | Precision | Recall | F1-Score | Support |
-| --- | --- | --- | --- | --- | 
-| **ham** | 0.98 | 1.00 | 0.99 | 904 |
-| **spam** | 0.99 | 0.83 | 0.90 | 128 |
-| **accuracy** | | |0.98 | 1032 |
-| **macro avg** | 0.98 | 0.91 | 0.94 | 1032 |
-| **weighted avg** | 0.98 | 0.98 | 0.98 | 1032 |
+##  Project Structure
 
-> **Result Explanation:**
- The spam detection model achieved an accuracy of 97.77%, which means it correctly classified most of the emails as spam or ham. The precision and recall values show that the model is very effective at identifying ham emails with high accuracy, while also performing strongly in detecting spam emails Overall, the results indicate that the model is reliable and  suitable for real-world email spam filtering applications.
-
-## Installation & Usage
-
-1. **Clone the repository:**
-
-```bash
-git clone https://github.com/alisulmanpro/Email-Classifier-1.git
-
+``` txt
+email-spam-detection/
+│
+├── data/
+│ └── raw_dataset.csv
+│
+├── notebooks/
+│ └── eda_and_training.ipynb
+│
+├── src/
+│ ├── preprocessing.py
+│ ├── train.py
+│ └── evaluate.py
+│
+├── models/
+│ ├── spam_classifier.pkl
+│ └── tfidf_vectorizer.pkl
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
 
-2. **Install dependencies:**
+---
 
+## Approach Overview
+
+### 1. Text Preprocessing (Minimal, Signal-Preserving)
+- Remove HTML tags and email headers
+- Normalize whitespace
+- Convert text to lowercase
+- Replace URLs and email addresses with tokens
+- **Keep punctuation signals (`! ? $`)**
+- Avoid over-cleaning to preserve spam indicators
+
+### 2. Feature Engineering
+- **TF-IDF Vectorization**
+- Word n-grams (1–2)
+- Sublinear TF scaling
+- Rare and overly frequent term filtering
+
+### 3. Model Selection
+- **Logistic Regression**
+- Class weighting to handle imbalance
+- Chosen for:
+  - Interpretability
+  - Speed
+  - Industry adoption
+
+### 4. Decision Threshold Optimization
+- Default threshold adjusted from `0.50` → `0.27`
+- Improves spam recall while maintaining high precision
+
+---
+
+## Results
+
+### Final Performance (Threshold = 0.27)
+
+| Metric        | Ham     | Spam |
+|---------------|---------|------|
+| Precision     | 1.00    | 0.94 |
+| Recall        | 0.99    | 0.97 |
+| F1-Score      | 0.99    | 0.95 |
+| Accuracy      | **99%** |
+
+---
+
+## Evaluation Artifacts
+
+### Confusion Matrix & Classification Report
+<img width="3840" height="2160" alt="Image" src="https://github.com/user-attachments/assets/0eea3503-46d0-4913-841f-0ad55c9c7856" />
+
+---
+
+##  How to Run the Project
+
+### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-
-3. **Run the application:**
-
+### 2. Train the Model
 ```bash
-streamlit run main.py
-
+python src/train.py
 ```
 
-## Spam Testing
-<img width="1352" height="644" alt="Image" src="https://github.com/user-attachments/assets/8c1ae09f-939a-43de-8c5b-b71c695f9813" />
+### 3. Evaluate the Model
+```bash
+python src/evaluate.py
+```
 
-## Ham Testing
-<img width="1345" height="652" alt="Image" src="https://github.com/user-attachments/assets/11943d71-fb9c-4013-bf05-f649f3847a7e" />
+## Key Engineering Decisions
 
-## Common words in spam email
-<img width="527" height="288" alt="Image" src="https://github.com/user-attachments/assets/d6a4a8c1-0bbb-4640-bf02-7312639c6c73" />
+- Avoided deep learning due to small dataset size
 
-## Common words in ham email
-<img width="528" height="288" alt="Image" src="https://github.com/user-attachments/assets/03ec3bf2-71b6-4be9-9905-5019444750a8" />
+- Focused on feature engineering over model complexity
 
-## Confusion Matrix
-<img width="436" height="365" alt="Image" src="https://github.com/user-attachments/assets/f4662d58-4f19-4d83-a958-5d39e37c3138" />
+- Explicit threshold tuning based on business tradeoffs
+
+- Clean separation between experimentation and production code
+
+## Model Artifacts
+
+Saved in `models/`:
+
+- `spam_classifier.pkl` → Trained Logistic Regression model
+
+- `tfidf_vectorizer.pkl` → TF-IDF feature transformer
+
+## Demo & Media (Optional)
+
+- Video Demo:
+
+<video src="./assets/video.mp4" width="100%" controls></video>
+
+## Author
+
+**Ali Sulman** <br/>
+Machine Learning Engineer (Aspirant)<br/>
+Focused on applied ML, NLP, and production-ready systems.
+
+## License
+This project is open for educational and portfolio use.
+
+---
+
+## What This README Does for You
+
+- Looks **professional on GitHub**
+- Easy to explain in interviews
+- Shows **engineering maturity**
+- Ready for deployment extension
