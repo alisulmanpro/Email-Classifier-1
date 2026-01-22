@@ -147,9 +147,12 @@ Saved in `models/`:
 
 ## Demo
 
-- Video Demo:
-
-<video src="https://res.cloudinary.com/doetqiwsa/video/upload/v1769078551/recording_2026-01-21T18-30-51-627Z_ytftqc.webm" width="100%" controls></video>
+<h3 align="center">Vɪᴅᴇᴏ Dᴇᴍᴏ</h3>
+<p align="center">
+  <a href="https://res.cloudinary.com/doetqiwsa/video/upload/v1769078551/recording_2026-01-21T18-30-51-627Z_ytftqc.webm">
+    <img width="875" height="492" alt="Image" src="https://github.com/user-attachments/assets/00bd64e3-3850-4e19-b46d-1b3d6f9998e4" />
+  </a>
+</p>
 
 ## Author
 
